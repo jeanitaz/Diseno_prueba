@@ -4,6 +4,7 @@ import "../styles/Form.css";
 type Ticket = {
   code: string;
   name: string;
+  last: string;
   address: string;
   position: string;
   email: string;
@@ -37,6 +38,7 @@ function generateTicketCode() {
 
 export default function Formulario() {
   const [name, setName] = useState("");
+  const[last, setLast]=useState("");
   const [address, setAddress] = useState("");
   const [position, setPosition] = useState("");
   const [email, setEmail] = useState("");
@@ -51,7 +53,7 @@ export default function Formulario() {
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!name.trim()) e.name = "Nombre y Apellido es obligatorio.";
+    if (!name.trim()) e.name = "El Nombre y Apellido es obligatorio.";
     if (!position.trim()) e.position = "Cargo es obligatorio.";
     if (!description.trim()) e.description = "Descripción del problema es obligatoria.";
     // Simple email regex
@@ -75,6 +77,7 @@ export default function Formulario() {
     const ticket: Ticket = {
       code,
       name,
+      last,
       address,
       position,
       email,
@@ -93,6 +96,7 @@ export default function Formulario() {
 
     // Opcional: limpiar formulario
     setName("");
+    setLast("");
     setAddress("");
     setPosition("");
     setEmail("");
@@ -110,12 +114,16 @@ export default function Formulario() {
       <h2>Registro de Requerimiento TIC</h2>
       <form onSubmit={handleSubmit} noValidate>
         <label>
-          Nombre y Apellido *
-          <input value={name} onChange={(e) => setName(e.target.value)} type="text" />
+          Nombre *
+          <input value={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Juan" />
           {errors.name && <span className="error">{errors.name}</span>}
         </label>
-
         <label>
+          Apellido *
+          <input value={last} onChange={(e) => setLast(e.target.value)} type="text" placeholder="Alvarado" />
+          {errors.name && <span className="error">{errors.name}</span>}
+        </label>
+        <label >
           Dirección / Área
           <select value={address} onChange={(e) => setAddress(e.target.value)}>
             <option value="">-- Seleccione un área --</option>
@@ -135,13 +143,13 @@ export default function Formulario() {
 
         <label>
           Correo institucional *
-          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" />
+          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="alguien@gmail.com" />
           {errors.email && <span className="error">{errors.email}</span>}
         </label>
 
         <label>
           Teléfono / Extensión
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} type="text" />
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} type="text" placeholder="0987654321"/>
         </label>
 
         <label>
@@ -158,7 +166,7 @@ export default function Formulario() {
         {requestType === "Otros" && (
           <label className="form-full">
             Especifique (Otros) *
-            <input value={otherRequest} onChange={(e) => setOtherRequest(e.target.value)} type="text" />
+            <input value={otherRequest} onChange={(e) => setOtherRequest(e.target.value)} type="text" placeholder="Especifique su requerimento" />
             {errors.otherRequest && <span className="error">{errors.otherRequest}</span>}
           </label>
         )}
@@ -188,8 +196,8 @@ export default function Formulario() {
           <input value={observations} onChange={(e) => setObservations(e.target.value)} type="text" />
         </label>
 
-        <div className="actions form-full">
-          <button type="submit">Enviar requerimiento</button>
+        <div className="bg-white text-indigo-700 font-semibold py-3 px-8 rounded-full shadow-md hover:bg-indigo-100 transition duration-300">
+          <button type="submit" >Enviar requerimiento</button>
         </div>
       </form>
 
