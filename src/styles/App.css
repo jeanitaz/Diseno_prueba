@@ -9,12 +9,17 @@ button:hover {
   transform: scale(1.05);
 }
 
-img {
-  transition: transform 0.3s ease, filter 0.3s ease;
+.logo-inamhi {
+  max-width: 400px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
   filter: drop-shadow(0 0 10px rgba(0,0,0,0.2));
+  transition: transform 0.3s ease, filter 0.3s ease;
 }
 
-img:hover {
+.logo-inamhi:hover {
   transform: scale(1.02);
   filter: drop-shadow(0 0 15px rgba(0,0,0,0.3));
 }
+
