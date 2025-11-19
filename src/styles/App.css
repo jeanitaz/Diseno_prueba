@@ -1,25 +1,5 @@
 body {
     background: url('https://i.pinimg.com/originals/cf/85/d9/cf85d966c302f3728a0e8f81805c132a.gif') no-repeat center/cover;
-    margin: 0;
-  font-family: 'Manrope', sans-serif;
-  background-color: #f0f4ff;
-}
-
-button:hover {
-  transform: scale(1.05);
-}
-
-.logo-inamhi {
-  max-width: 400px;
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 0 10px rgba(0,0,0,0.2));
-  transition: transform 0.3s ease, filter 0.3s ease;
-}
-
-.logo-inamhi:hover {
-  transform: scale(1.02);
-  filter: drop-shadow(0 0 15px rgba(0,0,0,0.3));
+    background-attachment: fixed;
 }
 
