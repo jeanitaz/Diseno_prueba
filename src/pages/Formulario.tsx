@@ -4,6 +4,7 @@ import "../styles/Form.css";
 type Ticket = {
   code: string;
   name: string;
+  last: string;
   address: string;
   position: string;
   email: string;
@@ -37,11 +38,12 @@ function generateTicketCode() {
 
 export default function Formulario() {
   const [name, setName] = useState("");
+  const [last, setLast] = useState("");
   const [address, setAddress] = useState("");
   const [position, setPosition] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [requestType, setRequestType] = useState(requestOptions[0]);
+  const [requestType, setRequestType] = useState(""); // cambiado para mostrar placeholder
   const [otherRequest, setOtherRequest] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -51,8 +53,9 @@ export default function Formulario() {
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!name.trim()) e.name = "Nombre y Apellido es obligatorio.";
+    if (!name.trim()) e.name = "El Nombre y Apellido es obligatorio.";
     if (!position.trim()) e.position = "Cargo es obligatorio.";
+    if (!requestType) e.requestType = "El tipo de requerimiento es obligatorio."; // validación agregada
     if (!description.trim()) e.description = "Descripción del problema es obligatoria.";
     // Simple email regex
     const emailRegex = /^\S+@\S+\.\S+$/;
@@ -75,6 +78,7 @@ export default function Formulario() {
     const ticket: Ticket = {
       code,
       name,
+      last,
       address,
       position,
       email,
@@ -93,11 +97,12 @@ export default function Formulario() {
 
     // Opcional: limpiar formulario
     setName("");
+    setLast("");
     setAddress("");
     setPosition("");
     setEmail("");
     setPhone("");
-    setRequestType(requestOptions[0]);
+    setRequestType(""); // vuelve al placeholder
     setOtherRequest("");
     setDescription("");
     setFile(null);
@@ -107,24 +112,36 @@ export default function Formulario() {
 
   return (
     <div className="form-container">
-      <h2>Registro de Requerimiento TIC</h2>
+      <h2 className="align-center ">REGISTRO DE REQUERIMIENTO TIC</h2>
       <form onSubmit={handleSubmit} noValidate>
         <label>
-          Nombre y Apellido *
-          <input value={name} onChange={(e) => setName(e.target.value)} type="text" />
+          Nombre *
+          <input value={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Juan" />
           {errors.name && <span className="error">{errors.name}</span>}
         </label>
-
         <label>
+          Apellido *
+          <input value={last} onChange={(e) => setLast(e.target.value)} type="text" placeholder="Alvarado" />
+          {errors.name && <span className="error">{errors.name}</span>}
+        </label>
+        <label >
           Dirección / Área
           <select value={address} onChange={(e) => setAddress(e.target.value)}>
             <option value="">-- Seleccione un área --</option>
-            <option value="Dirección General">Dirección General</option>
-            <option value="Área Técnica">Área Técnica</option>
-            <option value="Oficina Administrativa">Oficina Administrativa</option>
-            <option value="Otro">Otro</option>
+            <option value="Dirección General">Tecnologías De La Información Y Comunicación</option>
+            <option value="Área Técnica">Dirección De Información Hidrometeorológica</option>
+            <option value="Oficina Administrativa">Dirección De Administración De Recursos Humanos</option>
+            <option value="Oficina Administrativa">Dirección Administrativa Financiera</option>
+            <option value="Oficina Administrativa">Dirección Ejecutiva</option>
+            <option value="Oficina Administrativa">Dirección De Asesoría Jurídica</option>
+            <option value="Oficina Administrativa">Dirección De Comunicación Social</option>
+            <option value="Oficina Administrativa">Dirección De Planificación</option>
+            <option value="Oficina Administrativa">Dirección De Pronósticos Y Alertas</option>
+            <option value="Oficina Administrativa">Dirección De Estudios, Investigación Y Desarrollo Hidrometeorológico</option>
+            <option value="Oficina Administrativa">Dirección De La Red Nacional De Observación Hidrometeorológica</option>
+            <option value="Oficina Administrativa">Laboratorio Nacional De Calidad De Agua Y Sedimentos</option>
+            
           </select>
-          <small className="note">(Reemplazar por catálogo institucional si está disponible)</small>
         </label>
 
         <label>
@@ -135,30 +152,32 @@ export default function Formulario() {
 
         <label>
           Correo institucional *
-          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" />
+          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="alguien@gmail.com" />
           {errors.email && <span className="error">{errors.email}</span>}
         </label>
 
         <label>
           Teléfono / Extensión
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} type="text" />
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} type="text" placeholder="0987654321"/>
         </label>
 
         <label>
           Tipo de requerimiento *
           <select value={requestType} onChange={(e) => setRequestType(e.target.value)}>
+            <option value="">-- Seleccione un requerimiento --</option>
             {requestOptions.map((opt) => (
               <option key={opt} value={opt}>
                 {opt}
               </option>
             ))}
           </select>
+          {errors.requestType && <span className="error">{errors.requestType}</span>}
         </label>
 
         {requestType === "Otros" && (
           <label className="form-full">
             Especifique (Otros) *
-            <input value={otherRequest} onChange={(e) => setOtherRequest(e.target.value)} type="text" />
+            <input value={otherRequest} onChange={(e) => setOtherRequest(e.target.value)} type="text" placeholder="Especifique su requerimento" />
             {errors.otherRequest && <span className="error">{errors.otherRequest}</span>}
           </label>
         )}
@@ -188,8 +207,8 @@ export default function Formulario() {
           <input value={observations} onChange={(e) => setObservations(e.target.value)} type="text" />
         </label>
 
-        <div className="actions form-full">
-          <button type="submit">Enviar requerimiento</button>
+        <div className="bg-blue-500 text-black-700 font-semibold py-3 px-8 rounded-full shadow-md hover:bg-blue-400 transition duration-300">
+          <button type="submit" >Enviar requerimiento</button>
         </div>
       </form>
 
@@ -217,7 +236,7 @@ export default function Formulario() {
               <strong>Archivo adjunto:</strong> {submitted.fileName}
             </p>
           )}
-          <p className="success">Ticket creado y listado para el personal TIC (simulado).</p>
+          <p className="success">Ticket creado exitosamente! Por favor no olvidar su codigo de Ticket para ver su estado.</p>
         </div>
       )}
     </div>
