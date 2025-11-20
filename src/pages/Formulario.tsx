@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import "../styles/Form.css";
+import TicketsModal from "./TicketsModal";
 
 type Ticket = {
   code: string;
@@ -16,6 +17,8 @@ type Ticket = {
   observations?: string;
   createdAt: string;
 };
+
+
 
 const requestOptions = [
   "Problemas de hardware (Físico)",
@@ -50,6 +53,7 @@ export default function Formulario() {
   const [observations, setObservations] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState<Ticket | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   const validate = () => {
     const e: Record<string, string> = {};
@@ -121,7 +125,20 @@ export default function Formulario() {
   };
 
   return (
+    
+    
     <div className="form-container">
+
+<div className="header-actions">
+  <button className="view-tickets-btn" onClick={() => setShowModal(true)}>
+    Ver Tickets
+  </button>
+</div>
+
+{showModal && <TicketsModal onClose={() => setShowModal(false)} />}
+
+
+
       <h2 className="align-center ">REGISTRO DE REQUERIMIENTO TIC</h2>
       <form onSubmit={handleSubmit} noValidate>
         <label>
@@ -171,7 +188,7 @@ export default function Formulario() {
           <input value={phone} onChange={(e) => setPhone(e.target.value)} type="text" placeholder="Ingrese su numero telefonico"/>
         </label>
 
-        <label>
+        <label> 
           Tipo de requerimiento *
           <select value={requestType} onChange={(e) => setRequestType(e.target.value)}>
             <option value="">-- Seleccione un requerimiento --</option>
@@ -217,9 +234,10 @@ export default function Formulario() {
           <input value={observations} onChange={(e) => setObservations(e.target.value)} type="text" placeholder="Ingrese observaciones adicionales (opcional)"/>
         </label>
 
-        <div className="actions form-full">
-          <button type="submit" className="submit-btn">Enviar requerimiento</button>
-        </div>
+       <div className="actions">
+  <button type="submit" className="submit-btn">ENVIAR REQUERIMIENTO</button>
+</div>
+
       </form>
 
       {submitted && (
@@ -252,3 +270,6 @@ export default function Formulario() {
     </div>
   );
 }
+
+
+

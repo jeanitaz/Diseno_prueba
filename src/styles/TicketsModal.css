@@ -1,0 +1,130 @@
+
+
+/* Fondo del modal con animación fade */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn .35s ease;
+  z-index: 3000;
+}
+
+/* Tarjeta glassmorphism */
+.modal-card {
+  width: 90%;
+  max-width: 950px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(18px);
+  border-radius: 22px;
+  padding: 25px;
+  animation: slideUp .35s ease;
+  box-shadow: 0 12px 45px rgba(0,0,0,0.25);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(35px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Header */
+.modal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-top h2 {
+  margin: 0;
+}
+
+.close-btn {
+  background: #ff7777;
+  color: white;
+  border: none;
+  font-size: 18px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.close-btn:hover {
+  background: #ff5555;
+}
+
+/* Buscador */
+.search-bar {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  margin: 20px 0;
+  background: white;
+  font-size: 15px;
+}
+
+/* Tabla */
+.table-wrapper {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  padding-bottom: 12px;
+  color: #333;
+}
+
+td {
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+/* Badge de estado */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+/* Colores */
+.status-badge.Pendiente,
+.status-badge.pendiente {
+  background: #fff4c4;
+  color: #9a7a00;
+}
+
+.status-badge.Aprobado {
+  background: #d4ffd4;
+  color: #1d7a1d;
+}
+
+.status-badge.Rechazado {
+  background: #ffd4d4;
+  color: #a52222;
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #555;
+}
+
+
+
