@@ -1,7 +1,5 @@
 
 import "../styles/Admin.css";
-import Navbar from "../components/CardNav";
-import logoImg from "../assets/lgo.png";
 
 const StatCard = ({ title, value, delta }: { title: string; value: string; delta?: string }) => (
     <div className="stat-card">
@@ -14,7 +12,6 @@ const StatCard = ({ title, value, delta }: { title: string; value: string; delta
 export default function Admin() {
     return (
         <>
-        <Navbar logo={logoImg} items={[]} />
         <div className="admin-root">
             <aside className="admin-sidebar">
                 <img src="../src/assets/lgo.png"></img>
