@@ -126,12 +126,12 @@ export default function Formulario() {
       <form onSubmit={handleSubmit} noValidate>
         <label>
           Nombre *
-          <input value={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Jean" />
+          <input value={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Ingrese sus nombres completos" />
           {errors.name && <span className="error">{errors.name}</span>}
         </label>
         <label>
           Apellido *
-          <input value={last} onChange={(e) => setLast(e.target.value)} type="text" placeholder="Itaz" />
+          <input value={last} onChange={(e) => setLast(e.target.value)} type="text" placeholder="Ingrese sus apellidos completos" />
           {errors.last && <span className="error">{errors.last}</span>}
         </label>
         <label >
@@ -156,19 +156,19 @@ export default function Formulario() {
 
         <label>
           Cargo *
-          <input value={position} onChange={(e) => setPosition(e.target.value)} type="text" />
+          <input value={position} onChange={(e) => setPosition(e.target.value)} type="text"  placeholder="Ingrese su cargo"/>
           {errors.position && <span className="error">{errors.position}</span>}
         </label>
 
         <label>
           Correo institucional *
-          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="alguien@gmail.com" />
+          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Ingrese su correo electronico" />
           {errors.email && <span className="error">{errors.email}</span>}
         </label>
 
         <label>
           Teléfono / Extensión
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} type="text" placeholder="0987654321"/>
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} type="text" placeholder="Ingrese su numero telefonico"/>
         </label>
 
         <label>
@@ -194,7 +194,7 @@ export default function Formulario() {
 
         <label className="form-full">
           Descripción del problema *
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={6} />
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={6} placeholder="Ingrese la descripcion de su problema" />
           {errors.description && <span className="error">{errors.description}</span>}
         </label>
 
@@ -214,7 +214,7 @@ export default function Formulario() {
 
         <label>
           Observaciones adicionales
-          <input value={observations} onChange={(e) => setObservations(e.target.value)} type="text" />
+          <input value={observations} onChange={(e) => setObservations(e.target.value)} type="text" placeholder="Ingrese observaciones adicionales (opcional)"/>
         </label>
 
         <div className="actions form-full">
