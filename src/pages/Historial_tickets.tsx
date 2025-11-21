@@ -22,25 +22,59 @@ export default function Historial_tickets() {
     const [query, setQuery] = useState("");
 
     useEffect(() => {
-        try {
-            const raw = localStorage.getItem("tickets");
-            const arr: Ticket[] = raw ? JSON.parse(raw) : [];
-            setTickets(arr.reverse());
-        } catch (err) {
-            console.warn("Error leyendo tickets:", err);
-        }
+        fetchTickets();
     }, []);
 
-    const eliminar = (code: string) => {
-        const keep = tickets.filter(t => t.code !== code);
-        setTickets(keep);
-        localStorage.setItem("tickets", JSON.stringify(keep.slice().reverse()));
+    const fetchTickets = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('No autorizado. Inicia sesión.');
+            return;
+        }
+        try {
+            const response = await fetch('http://localhost:3000/api/tickets', {
+                headers: { 'Authorization': token }
+            });
+            if (!response.ok) throw new Error('Error al obtener tickets');
+            const data = await response.json();
+            setTickets(data);
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al cargar tickets.');
+        }
     };
 
-    const borrarTodo = () => {
+    const eliminar = async (code: string) => {
+        const token = localStorage.getItem('token');
+        if (!token || !confirm("¿Eliminar este ticket?")) return;
+        try {
+            const response = await fetch(`http://localhost:3000/api/tickets/${code}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': token }
+            });
+            if (!response.ok) throw new Error('Error al eliminar');
+            setTickets(tickets.filter(t => t.code !== code));
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al eliminar ticket.');
+        }
+    };
+
+    const borrarTodo = async () => {
         if (!confirm("¿Borrar todos los tickets? Esta acción no se puede deshacer.")) return;
-        setTickets([]);
-        localStorage.removeItem("tickets");
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        try {
+            const response = await fetch('http://localhost:3000/api/tickets', {
+                method: 'DELETE',
+                headers: { 'Authorization': token }
+            });
+            if (!response.ok) throw new Error('Error al borrar todos');
+            setTickets([]);
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al borrar todos.');
+        }
     };
 
     const filtered = tickets.filter((t) => {
@@ -71,11 +105,7 @@ export default function Historial_tickets() {
                 />
 
                 <button
-                    onClick={() => {
-                        const raw = localStorage.getItem("tickets");
-                        const arr: Ticket[] = raw ? JSON.parse(raw) : [];
-                        setTickets(arr.reverse());
-                    }}
+                    onClick={fetchTickets}
                     className="btn-accent"
                 >
                     Recargar

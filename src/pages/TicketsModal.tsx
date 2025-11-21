@@ -1,6 +1,3 @@
-
-
-
 import { useEffect, useState } from "react";
 import "../styles/TicketsModal.css";
 
@@ -17,19 +14,38 @@ type Ticket = {
 export default function TicketsModal({ onClose }: { onClose: () => void }) {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
- useEffect(() => {
-  const raw = localStorage.getItem("tickets");
-  const parsed: Ticket[] = raw ? JSON.parse(raw) : [];
-  setTickets(parsed);
-}, []);
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/tickets');
+        if (!response.ok) throw new Error('Error al obtener los tickets');
+        const data: Ticket[] = await response.json();
+        console.log('Tickets cargados desde la API:', data); // Depuración: Ver qué tickets se cargan
+        setTickets(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error desconocido');
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchTickets();
+  }, []);
 
-  const filtered = tickets.filter((t) =>
-    `${t.code} ${t.name} ${t.last} ${t.position} ${t.requestType}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+  // Filtrar solo si hay búsqueda, y por código, nombre o apellido
+  const filtered = search.trim()
+    ? tickets.filter((t) => {
+        const searchTerm = search.toLowerCase();
+        const ticketText = `${t.code} ${t.name} ${t.last}`.toLowerCase();
+        return ticketText.includes(searchTerm);
+      })
+    : []; // No mostrar ninguno si no hay búsqueda
+
+  console.log('Búsqueda actual:', search); // Depuración: Ver qué se está buscando
+  console.log('Tickets filtrados:', filtered); // Depuración: Ver resultados del filtro
 
   return (
     <div className="modal-bg" onClick={onClose}>
@@ -47,10 +63,13 @@ export default function TicketsModal({ onClose }: { onClose: () => void }) {
         <input
           className="search-bar"
           type="text"
-          placeholder="Buscar por código, nombre o cargo..."
+          placeholder="Buscar por código o nombre..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+
+        {loading && <p>Cargando tickets...</p>}
+        {error && <p className="error">Error: {error}</p>}
 
         <div className="table-wrapper">
           <table>
@@ -83,7 +102,9 @@ export default function TicketsModal({ onClose }: { onClose: () => void }) {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="no-data">No se encontraron tickets</td>
+                  <td colSpan={6} className="no-data">
+                    {search.trim() ? "No se encontraron tickets" : "Ingresa un código o nombre para buscar"}
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -94,7 +115,3 @@ export default function TicketsModal({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
-
-
-
-

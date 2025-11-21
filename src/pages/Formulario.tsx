@@ -18,8 +18,6 @@ type Ticket = {
   createdAt: string;
 };
 
-
-
 const requestOptions = [
   "Problemas de hardware (Físico)",
   "Problemas de software (Digital)",
@@ -46,7 +44,7 @@ export default function Formulario() {
   const [position, setPosition] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [requestType, setRequestType] = useState(""); // cambiado para mostrar placeholder
+  const [requestType, setRequestType] = useState("");
   const [otherRequest, setOtherRequest] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -60,9 +58,8 @@ export default function Formulario() {
     if (!name.trim()) e.name = "El Nombre es obligatorio.";
     if (!last.trim()) e.last = "El Apellido es obligatorio.";
     if (!position.trim()) e.position = "Cargo es obligatorio.";
-    if (!requestType) e.requestType = "El tipo de requerimiento es obligatorio."; // validación agregada
+    if (!requestType) e.requestType = "El tipo de requerimiento es obligatorio.";
     if (!description.trim()) e.description = "Descripción del problema es obligatoria.";
-    // Simple email regex
     const emailRegex = /^\S+@\S+\.\S+$/;
     if (!emailRegex.test(email)) e.email = "Formato de correo institucional inválido.";
     if (requestType === "Otros" && !otherRequest.trim()) e.otherRequest = "Por favor especifica el tipo en 'Otros'.";
@@ -76,7 +73,7 @@ export default function Formulario() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (ev: FormEvent) => {
+  const handleSubmit = async (ev: FormEvent) => {
     ev.preventDefault();
     if (!validate()) return;
     const code = generateTicketCode();
@@ -96,50 +93,42 @@ export default function Formulario() {
       createdAt: new Date().toISOString(),
     };
 
-    // Simulación: aquí enviarías a tu API
-    console.log("Ticket creado:", ticket);
-    setSubmitted(ticket);
-
     try {
-      const raw = localStorage.getItem("tickets");
-      const arr = raw ? JSON.parse(raw) : [];
-      arr.push(ticket);
-      localStorage.setItem("tickets", JSON.stringify(arr));
-    } catch (err) {
-      console.warn("No se pudo guardar el ticket en localStorage:", err);
+      const response = await fetch('http://localhost:3000/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ticket),
+      });
+      if (!response.ok) throw new Error('Error al enviar el ticket');
+      setSubmitted(ticket);
+      // Limpiar formulario
+      setName("");
+      setLast("");
+      setAddress("");
+      setPosition("");
+      setEmail("");
+      setPhone("");
+      setRequestType("");
+      setOtherRequest("");
+      setDescription("");
+      setFile(null);
+      setObservations("");
+      setErrors({});
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al enviar el ticket. Inténtalo de nuevo.');
     }
-
-    // Opcional: limpiar formulario
-    setName("");
-    setLast("");
-    setAddress("");
-    setPosition("");
-    setEmail("");
-    setPhone("");
-    setRequestType(""); // vuelve al placeholder
-    setOtherRequest("");
-    setDescription("");
-    setFile(null);
-    setObservations("");
-    setErrors({});
   };
 
   return (
-
-
     <div className="form-container">
-
       <div className="header-actions">
         <button className="view-tickets-btn" onClick={() => setShowModal(true)}>
           Ver Tickets
         </button>
       </div>
-
       {showModal && <TicketsModal onClose={() => setShowModal(false)} />}
-
-
-
-      <h2 className="align-center ">REGISTRO DE REQUERIMIENTO TIC</h2>
+      <h2 className="align-center">REGISTRO DE REQUERIMIENTO TIC</h2>
       <form onSubmit={handleSubmit} noValidate>
         <label>
           Nombre *
@@ -147,15 +136,13 @@ export default function Formulario() {
             value={name} onChange={(e) => { const onlyLetters = e.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ ]/g, ""); setName(onlyLetters); }} type="text" placeholder="Ingrese sus nombres completos" />
           {errors.name && <span className="error">{errors.name}</span>}
         </label>
-
         <label>
           Apellido *
           <input
             value={last} onChange={(e) => { const onlyLetters = e.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ ]/g, ""); setLast(onlyLetters); }} type="text" placeholder="Ingrese sus apellidos completos" />
           {errors.last && <span className="error">{errors.last}</span>}
         </label>
-
-        <label >
+        <label>
           Dirección / Área
           <select value={address} onChange={(e) => setAddress(e.target.value)}>
             <option value="">-- Seleccione un área --</option>
@@ -171,10 +158,8 @@ export default function Formulario() {
             <option value="Oficina Administrativa">Dirección De Estudios, Investigación Y Desarrollo Hidrometeorológico</option>
             <option value="Oficina Administrativa">Dirección De La Red Nacional De Observación Hidrometeorológica</option>
             <option value="Oficina Administrativa">Laboratorio Nacional De Calidad De Agua Y Sedimentos</option>
-
           </select>
         </label>
-
         <label>
           Cargo *
           <input
@@ -183,20 +168,16 @@ export default function Formulario() {
               const onlyLetters = e.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ ]/g, "");setPosition(onlyLetters);}} type="text" placeholder="Ingrese su cargo" />
           {errors.position && <span className="error">{errors.position}</span>}
         </label>
-
-
         <label>
           Correo institucional *
           <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Ingrese su correo electronico" />
           {errors.email && <span className="error">{errors.email}</span>}
         </label>
-
         <label>
           Teléfono / Extensión
           <input
             value={phone}
             onChange={(e) => {
-              // Solo números
               const onlyNums = e.target.value.replace(/\D/g, ""); if (onlyNums.length <= 10) {
                 setPhone(onlyNums);
               }
@@ -206,8 +187,6 @@ export default function Formulario() {
             maxLength={10}
           />
         </label>
-
-
         <label>
           Tipo de requerimiento *
           <select value={requestType} onChange={(e) => setRequestType(e.target.value)}>
@@ -220,7 +199,6 @@ export default function Formulario() {
           </select>
           {errors.requestType && <span className="error">{errors.requestType}</span>}
         </label>
-
         {requestType === "Otros" && (
           <label className="form-full">
             Especifique (Otros) *
@@ -228,13 +206,11 @@ export default function Formulario() {
             {errors.otherRequest && <span className="error">{errors.otherRequest}</span>}
           </label>
         )}
-
         <label className="form-full">
           Descripción del problema *
           <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={6} placeholder="Ingrese la descripcion de su problema" />
           {errors.description && <span className="error">{errors.description}</span>}
         </label>
-
         <label>
           Adjuntar evidencia (opcional)
           <input
@@ -248,18 +224,14 @@ export default function Formulario() {
           {errors.file && <span className="error">{errors.file}</span>}
           <small className="note">Se permiten imágenes y PDF. Tamaño máximo 8 MB.</small>
         </label>
-
         <label>
           Observaciones adicionales
           <input value={observations} onChange={(e) => setObservations(e.target.value)} type="text" placeholder="Ingrese observaciones adicionales (opcional)" />
         </label>
-
         <div className="actions">
           <button type="submit" className="submit-btn">ENVIAR REQUERIMIENTO</button>
         </div>
-
       </form>
-
       {submitted && (
         <div className="ticket-summary">
           <h3>Ticket generado</h3>
@@ -290,6 +262,3 @@ export default function Formulario() {
     </div>
   );
 }
-
-
-
