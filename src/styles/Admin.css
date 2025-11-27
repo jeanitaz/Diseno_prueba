@@ -12,7 +12,8 @@
     display: flex;
     min-height: 100vh;
     background: var(--bg);
-    padding: 24px; /* ← margen global alrededor del dashboard */
+    padding: 24px;
+    /* ← margen global alrededor del dashboard */
     box-sizing: border-box;
 }
 
@@ -35,7 +36,7 @@
     width: 160px;
     margin: 0 auto 10px auto;
     opacity: 0.95;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .side-nav {
@@ -157,6 +158,160 @@
     box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
     transition: 0.2s ease;
 }
+
+.ghost {
+    margin-left: auto;
+    border: none;
+    padding: 8px 14px;
+    background: red;
+    color: white;
+    border-radius: 8px;
+    transition: 0.2s ease-in-out;
+}
+
+.ghost:hover {
+    background: #cc0000;
+}
+
+.chart-placeholder {
+    width: 160px;
+    height: 160px;
+    border-radius: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    background: linear-gradient(135deg, #1fcaae, #4d4dff);
+    background-size: 200% 200%;
+    animation: gradientMove 4s ease infinite;
+
+    font-size: 48px;
+    font-weight: bold;
+    color: rgb(34, 58, 65);
+
+    /* Ajustes para centrar mejor */
+    line-height: 1;
+    padding-top: 6px;
+    /* centra visualmente el número */
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.status-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+/* Base card styling */
+.status-card {
+    padding: 18px;
+    border-radius: 14px;
+    background: #fffdfd;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s;
+    text-align: center;
+}
+
+.status-card:hover {
+    transform: translateY(-4px);
+}
+
+.status-card h4 {
+    margin: 0;
+    font-size: 16px;
+    color: #6b7280;
+}
+
+.status-value {
+    margin-top: 8px;
+    font-size: 26px;
+    font-weight: bold;
+}
+
+/* GRID */
+.status-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* Glassmorphism base */
+.glass {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Card */
+.status-card {
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+}
+
+.status-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.25);
+}
+
+/* Icono */
+.status-icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+/* Título */
+.status-card h4 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 0 6px rgba(0,0,0,0.25);
+}
+
+/* Bordes especiales por estado */
+.status-card.approved {
+  border-left: 5px solid #4ade80;
+}
+
+.status-card.rejected {
+  border-left: 5px solid #f87171;
+}
+
+.status-card.pending {
+  border-left: 5px solid #fbbf24;
+}
+
+.status-card.finished {
+  border-left: 5px solid #60a5fa;
+}
+
+/* Título principal */
+.ticket-status-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #1e293b;
+}
+
 
 .btn-primary:hover {
     filter: brightness(1.1);

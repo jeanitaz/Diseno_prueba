@@ -4,7 +4,7 @@ import Home from "../pages/Home";
 import Historial_tickets from "../pages/Historial_tickets";
 import Admin from "../pages/Admin";
 import AdminLogin from "../pages/Home_Admin";
-
+import ProtectedRoute from "../components/ProtectedRoute"; // Importa el nuevo componente
 
 const AppRoutes = () => {
     return (
@@ -12,7 +12,14 @@ const AppRoutes = () => {
             <Route path="/" element={<Home/>} />
             <Route path="/formulario" element={<Formulario/>} />
             <Route path="/listado" element={<Historial_tickets/>} />
-            <Route path="/admin" element={<Admin/>} />
+            <Route 
+                path="/admin" 
+                element={
+                    <ProtectedRoute>
+                        <Admin/>
+                    </ProtectedRoute>
+                } 
+            />
             <Route path="/adminlogin" element={<AdminLogin/>} />
         </Routes>
     )

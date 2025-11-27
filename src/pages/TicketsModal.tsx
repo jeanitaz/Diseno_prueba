@@ -53,62 +53,66 @@ export default function TicketsModal({ onClose }: { onClose: () => void }) {
         className="modal-card"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="modal-top">
-          <h2>📄 Mis Tickets Registrados</h2>
-          <button className="close-btn" onClick={onClose}>
-            ✕
-          </button>
-        </div>
+        <div className="modal-header">
+          <div className="modal-top">
+            <h2>📄 Mis Tickets Registrados</h2>
+            <button className="close-btn" onClick={onClose}>
+              ✕
+            </button>
+          </div>
 
-        <input
-          className="search-bar"
-          type="text"
-          placeholder="Buscar por código o nombre..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+          <input
+            className="search-bar"
+            type="text"
+            placeholder="Buscar por código o nombre..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
         {loading && <p>Cargando tickets...</p>}
         {error && <p className="error">Error: {error}</p>}
 
-        <div className="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Código</th>
-                <th>Fecha</th>
-                <th>Solicitante</th>
-                <th>Cargo</th>
-                <th>Tipo</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
+        <div className="table-container">
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th className="col-code">Código</th>
+                  <th className="col-date">Fecha</th>
+                  <th className="col-requester">Solicitante</th>
+                  <th className="col-position">Cargo</th>
+                  <th className="col-type">Tipo</th>
+                  <th className="col-status">Estado</th>
+                </tr>
+              </thead>
 
-            <tbody>
-              {filtered.length > 0 ? (
-                filtered.map((t, i) => (
-                  <tr key={i}>
-                    <td>{t.code}</td>
-                    <td>{new Date(t.createdAt).toLocaleString()}</td>
-                    <td>{t.name} {t.last}</td>
-                    <td>{t.position}</td>
-                    <td>{t.requestType}</td>
-                    <td>
-                      <span className={`status-badge ${t.status || "pendiente"}`}>
-                        {t.status || "Pendiente"}
-                      </span>
+              <tbody>
+                {filtered.length > 0 ? (
+                  filtered.map((t, i) => (
+                    <tr key={i}>
+                      <td className="ticket-code">{t.code}</td>
+                      <td className="ticket-date">{new Date(t.createdAt).toLocaleString()}</td>
+                      <td className="ticket-requester">{t.name} {t.last}</td>
+                      <td className="ticket-position">{t.position}</td>
+                      <td className="ticket-type">{t.requestType}</td>
+                      <td className="ticket-status">
+                        <span className={`status-badge ${t.status || "pendiente"}`}>
+                          {t.status || "Pendiente"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="no-data">
+                      {search.trim() ? "No se encontraron tickets" : "Ingresa un código o nombre para buscar"}
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="no-data">
-                    {search.trim() ? "No se encontraron tickets" : "Ingresa un código o nombre para buscar"}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
       </div>
