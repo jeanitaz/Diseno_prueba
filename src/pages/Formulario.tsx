@@ -2,6 +2,8 @@ import { useState, type FormEvent } from "react";
 import "../styles/Form.css";
 import TicketsModal from "./TicketsModal";
 
+
+
 type Ticket = {
   code: string;
   name: string;
