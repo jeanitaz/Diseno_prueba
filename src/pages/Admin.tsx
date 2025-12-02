@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import "../styles/Admin.css";
+import logoInamhi from '../assets/lgo.png';
 
 const StatusCard = ({ title, icon, status }: { title: string; icon: string; status: string }) => {
-  return (
-    <div className={`status-card glass ${status}`}>
-      <div className="status-icon">{icon}</div>
-      <h4>{title}</h4>
-    </div>
-  );
+    return (
+        <div className={`status-card glass ${status}`}>
+            <div className="status-icon">{icon}</div>
+            <h4>{title}</h4>
+        </div>
+    );
 };
 
 export default function Admin() {
@@ -39,7 +40,7 @@ export default function Admin() {
     return (
         <div className="admin-root">
             <aside className="admin-sidebar">
-                <img src="../src/assets/lgo.png" alt="Logo INAMHI" />
+                <img src={logoInamhi} alt="Logo INAMHI" />
                 <nav className="side-nav">
                     <div className="section">Paginas</div>
                     <a>Account Settings</a>

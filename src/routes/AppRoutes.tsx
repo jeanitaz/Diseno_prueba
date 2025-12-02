@@ -1,26 +1,26 @@
 import { Route, Routes } from "react-router-dom"
 import Formulario from "../pages/Formulario";
-import Home from "../pages/Home";
+import HomePage from "../pages/HomePage";
 import Historial_tickets from "../pages/Historial_tickets";
 import Admin from "../pages/Admin";
 import AdminLogin from "../pages/Home_Admin";
-import ProtectedRoute from "../components/ProtectedRoute"; // Importa el nuevo componente
+import ProtectedRoute from "../components/ProtectedRoute";
 
 const AppRoutes = () => {
     return (
         <Routes>
-            <Route path="/" element={<Home/>} />
-            <Route path="/formulario" element={<Formulario/>} />
-            <Route path="/listado" element={<Historial_tickets/>} />
-            <Route 
-                path="/admin" 
+            <Route path="/" element={<HomePage />} />
+            <Route path="/formulario" element={<Formulario />} />
+            <Route path="/listado" element={<Historial_tickets />} />
+            <Route
+                path="/admin"
                 element={
                     <ProtectedRoute>
-                        <Admin/>
+                        <Admin />
                     </ProtectedRoute>
-                } 
+                }
             />
-            <Route path="/adminlogin" element={<AdminLogin/>} />
+            <Route path="/adminlogin" element={<AdminLogin />} />
         </Routes>
     )
 }

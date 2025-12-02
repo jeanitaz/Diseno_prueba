@@ -13,41 +13,27 @@ app.use(express.json());  // Para parsear JSON
 const db = mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'root',
+    password: process.env.DB_PASSWORD || '0993643838Jc',
     database: process.env.DB_NAME || 'tickets_db',
-    port: process.env.DB_PORT || 3306  // Agrega esta línea para el puerto
+    port: process.env.DB_PORT || 3306
 });
 
-db.connect((err) => {
-    if (err) throw err;
-    console.log('Conectado a MySQL');
-});
-
-// Ruta de login para admin
-app.post('/api/login', (req, res) => {
-    const { email, password } = req.body;
-    db.query('SELECT * FROM admins WHERE email = ?', [email], (err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
-        if (results.length === 0) return res.status(401).json({ error: 'Credenciales inválidas' });
-        const admin = results[0];
-        if (!bcrypt.compareSync(password, admin.password)) return res.status(401).json({ error: 'Credenciales inválidas' });
-        const token = jwt.sign({ id: admin.id }, process.env.JWT_SECRET || 'secret', { expiresIn: '1h' });
-        res.json({ token });
-    });
-});
-
-// Middleware para verificar token (para rutas protegidas)
+// Middleware para verificar token
 const verifyToken = (req, res, next) => {
     const token = req.headers['authorization'];
-    if (!token) return res.status(403).json({ error: 'Token requerido' });
-    jwt.verify(token, process.env.JWT_SECRET || 'secret', (err, decoded) => {
+    if (!token) return res.status(403).json({ error: 'No se proporcionó token' });
+
+    // Si el token viene como "Bearer <token>", extraerlo
+    const tokenString = token.startsWith('Bearer ') ? token.slice(7) : token;
+
+    jwt.verify(tokenString, process.env.JWT_SECRET || 'secret', (err, decoded) => {
         if (err) return res.status(403).json({ error: 'Token inválido' });
         req.adminId = decoded.id;
         next();
     });
 };
 
-// Crear ticket (sin auth, ya que es público)
+// Crear ticket (público)
 app.post('/api/tickets', (req, res) => {
     const { code, name, last, address, position, email, phone, requestType, otherRequest, description, fileName, observations } = req.body;
     db.query(
@@ -60,7 +46,7 @@ app.post('/api/tickets', (req, res) => {
     );
 });
 
-// Obtener todos los tickets (AHORA PÚBLICO - quité verifyToken)
+// Obtener tickets (público para pruebas)
 app.get('/api/tickets', (req, res) => {
     db.query('SELECT * FROM tickets ORDER BY createdAt DESC', (err, results) => {
         if (err) return res.status(500).json({ error: err.message });

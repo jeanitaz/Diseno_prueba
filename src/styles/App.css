@@ -1,8 +1,5 @@
 body {
-    background: url('https://i.pinimg.com/originals/cf/85/d9/cf85d966c302f3728a0e8f81805c132a.gif');
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: cover;
+    background-color: #f0f2f5;
     font-family: 'Open Sans', sans-serif;
     font-size: 18px;
     color: #333;
@@ -16,46 +13,47 @@ body {
 
 /* Contenedor principal con grid */
 .home-container {
-  display: grid;
-  grid-template-columns: 40% 60%;
-  min-height: 100vh;
-  background-image: url('https://i.pinimg.com/originals/cf/85/d9/cf85d966c302f3728a0e8f81805c132a.gif');
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  max-width: 1200px;
+  min-height: 80vh;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  overflow: hidden;
 }
 
 
 /* Logo independiente */
 .home-logo {
+  flex: 1;
   display: flex;
-  justify-content: flex-start; /* izquierda */
-  align-items: flex-start;     /* arriba */
-  padding: 120px;
-  margin-top: 29px;
-  margin-left: -70px;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  background-color: #eef2f6;
 }
 
 .logo-inamhi {
-  max-width: 450px;
-  margin-top: -2px;   /* solo afecta al logo */
-  margin-right: -29px;
-  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.2));
-  transition: transform 0.3s ease, filter 0.3s ease;
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
 }
 
 .logo-inamhi:hover {
-  transform: scale(1.02);
-  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.3));
+  transform: scale(1.05);
 }
 
 /* Bienvenida independiente */
 .home-welcome {
+  flex: 1.5;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* centrado vertical */
-  align-items: center;     /* centrado horizontal */
-  padding: 40px;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
   text-align: center;
 }
 
