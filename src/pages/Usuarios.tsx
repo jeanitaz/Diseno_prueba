@@ -1,8 +1,10 @@
 
-export default function Usuarios() {
+ function Usuarios() {
     return (
         <>
-
+            
         </>
     )
 }
+
+export default Usuarios;

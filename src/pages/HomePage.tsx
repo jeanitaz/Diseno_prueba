@@ -1,39 +1,52 @@
-import '../styles/App.css';
+import { Link } from 'react-router-dom';
+import '../styles/HomeInamhi.css'; // Usaremos un archivo CSS específico
 import logoInamhi from '../assets/lgo.png';
 
 const HomePage = () => {
     return (
-        <div className="home-container" style={{ background: 'white', zIndex: 9999 }}>
-            {/* Columna izquierda (logo) */}
-            <div className="home-logo">
-                <img src={logoInamhi} alt="Logo INAMHI" className="logo-inamhi" />
+        <div className="inamhi-home-container">
+            {/* Elementos de fondo para la animación */}
+            <div className="weather-bg-animation"></div>
+            <div className="particles">
+                <span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span>
             </div>
 
-            {/* Columna derecha (bienvenida) */}
-            <div className="home-welcome">
-                <div className="max-wl text-center">
-                    <h1 className="text-5xl font-bold text-blue-700 leading-tight mb-6 drop-shadow-lg">
-                        Bienvenido Al Sistema De Soporte Técnico INAMHI
+            {/* Contenido Principal (Efecto Cristal) */}
+            <div className="glass-card animate-entry">
+                
+                <div className="logo-area">
+                    <div className="logo-glow">
+                        <img src={logoInamhi} alt="Logo INAMHI" className="main-logo" />
+                    </div>
+                </div>
+
+                <div className="text-content">
+                    <h1 className="main-title">
+                        Sistema de Soporte Técnico
                     </h1>
-                    <p className="text-lg text-indigo-900 mb-8">
-                        Nuestro equipo trabaja con dedicación para ofrecer soluciones confiables, ágiles y de calidad.
+                    <h2 className="sub-title">INAMHI</h2>
+                    
+                    <p className="description">
+                        Plataforma institucional para la gestión ágil de requerimientos tecnológicos, 
+                        asegurando la continuidad de nuestros servicios meteorológicos e hidrológicos.
                     </p>
-                    <a
-                        href="/formulario"
-                        className="bg-white text-indigo-700 font-semibold py-3 px-8 rounded-full shadow-md hover:bg-indigo-100 transition duration-300"
-                    >
-                        INGRESAR
-                    </a>
-                    <div>
-                        <a href="/adminlogin">
-                            <br />
-                            <p className="text-sm text-black mt-4 underline hover:text-text cursor-pointer">
-                                ¿Eres administrador? Haz clic aquí
-                            </p>
-                        </a>
+
+                    <div className="action-buttons">
+                        <Link to="/formulario" className="btn-primary-glow">
+                            <span className="btn-icon">📝</span> INGRESAR SOLICITUD
+                        </Link>
+                        
+                        <Link to="/login" className="btn-secondary-ghost">
+                            Acceso Administrativo &rarr;
+                        </Link>
                     </div>
                 </div>
             </div>
+
+            <footer className="simple-footer">
+                <p>&copy; {new Date().getFullYear()} Instituto Nacional de Meteorología e Hidrología</p>
+            </footer>
         </div>
     );
 };

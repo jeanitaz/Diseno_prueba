@@ -1,105 +1,108 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+
 import "../styles/Admin.css";
 import logoInamhi from '../assets/lgo.png';
+import Reloj from "../components/reloj";
+import { useNavigate } from "react-router-dom";
 
-const StatusCard = ({ title, icon, status }: { title: string; icon: string; status: string }) => {
+// Actualizamos el componente para soportar el nuevo diseño de KPI
+const StatusCard = ({ title, icon, status, count = 0 }: { title: string; icon: string; status: string; count?: number }) => {
     return (
-        <div className={`status-card glass ${status}`}>
-            <div className="status-icon">{icon}</div>
-            <h4>{title}</h4>
+        <div className={`status-card ${status}`}>
+            <div className="status-content">
+                <span className="status-title">{title}</span>
+                <span className="status-count">{count}</span>
+            </div>
+            <div className="status-icon-box">
+                {icon}
+            </div>
         </div>
     );
 };
 
 export default function Admin() {
-    const [ticketCount, setTicketCount] = useState(0);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        // Verificar si el usuario está autenticado
-        const token = localStorage.getItem('token');
-        if (!token) {
-            navigate('/adminlogin');
-            return;
-        }
-
-        try {
-            const tickets = JSON.parse(localStorage.getItem("tickets") || "[]");
-            setTicketCount(Array.isArray(tickets) ? tickets.length : 0);
-        } catch {
-            setTicketCount(0);
-        }
-    }, [navigate]);
-
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/adminlogin');
-    };
+        // Optional: Clear any stored authentication data
+        // localStorage.removeItem('authToken');
+        // sessionStorage.clear();
 
+        // Navigate to login page
+        navigate('/login');
+    };
     return (
         <div className="admin-root">
+            {/* Sidebar Oscuro */}
             <aside className="admin-sidebar">
                 <img src={logoInamhi} alt="Logo INAMHI" />
                 <nav className="side-nav">
-                    <div className="section">Paginas</div>
-                    <a>Account Settings</a>
-                    <a>Authentications</a>
-                    <div className="section">Components</div>
-                    <a>Cards</a>
-                    <a>User Interface</a>
-                    <div className="section">Tablas y Registro de Usuarios</div>
-                    <a>Registro de Usuarios</a>
-                    <a href="/listado">Historial</a>
+                    <div className="section">Principal</div>
+                    <a className="active">Dashboard</a>
+                    <a>Estadísticas</a>
+
+                    <div className="section">Gestión</div>
+                    <a href="/listado">Historial de Tickets</a>
+                    <a>Usuarios Registrados</a>
+
+                    <div className="section">Configuración</div>
+                    <a>Perfil</a>
+                    <a>Seguridad</a>
                 </nav>
             </aside>
 
+            {/* Contenido Principal */}
             <main className="admin-main">
                 <header className="topbar">
+                    <div>
+                        {/* Espacio para breadcrumbs o título si deseas */}
+                    </div>
                     <div className="top-actions">
+                        <div className="avatar">DG</div>
                         <button onClick={handleLogout} className="logout-btn">
                             Cerrar Sesión
                         </button>
-                        <div className="avatar">DG</div>
                     </div>
                 </header>
-
                 <section className="page-grid">
+                    {/* Hero Banner */}
                     <div className="hero card">
                         <div className="hero-left">
-                            <h3>Bienvenido de nuevo Diego Gonzalez!</h3>
-                            <br />
-                            <p>En este administrador encontraras las estadisticas del sistema de gestion</p>
-                            <br />
-                            <button className="btn-primary">View Badges</button>
+                            <h3>¡Bienvenido, Diego Gonzalez!</h3>
+                            <p>Aquí tienes un resumen general de la actividad del sistema hoy.</p>
+                            <button onClick={() => navigate('/reportes')} className="btn-primary">Ver Reportes</button>
                         </div>
                         <div className="hero-right">
-                            <div className="avatar-hero">👨‍💻</div>
+                            📊
                         </div>
                     </div>
-
-                    <div className="card revenue">
-                        <h4>Total Conteo de Tickets</h4>
-                        <div className="chart-placeholder">
-                            <span>{ticketCount}</span>
-                        </div>
-                    </div>
-
+                    <Reloj />
+                    {/* Tarjetas de Estado (KPIs) */}
                     <div className="ticket-status-wrapper">
-                        <h3 className="ticket-status-title">Estado de los Tickets</h3>
-                        <div className="card status-cards glass">
-                            <StatusCard title="Aprobado" icon="✔️" status="approved" />
-                            <StatusCard title="Rechazado" icon="❌" status="rejected" />
-                            <StatusCard title="Pendiente" icon="⏳" status="pending" />
-                            <StatusCard title="Finalizado" icon="📁" status="finished" />
+                        <h3 className="ticket-status-title">Resumen de Tickets</h3>
+                        <div className="status-cards">
+                            {/* Usamos datos simulados (count) para el ejemplo visual */}
+                            <StatusCard title="Aprobados" icon="✔️" status="approved" count={12} />
+                            <StatusCard title="Rechazados" icon="❌" status="rejected" count={3} />
+                            <StatusCard title="Pendientes" icon="⏳" status="pending" count={5} />
+                            <StatusCard title="Finalizados" icon="📁" status="finished" count={28} />
                         </div>
                     </div>
 
+                    {/* Gráfico Principal (Simulado) */}
+                    <div className="card revenue">
+                        <h4>Total Tickets Generados</h4>
+                        <div className="chart-placeholder">
+                            <span className="chart-number">{ }</span>
+                            <small>Tickets Totales</small>
+                        </div>
+                    </div>
+
+                    {/* Tarjeta Secundaria */}
                     <div className="card orders">
-                        <h4>Order Statistics</h4>
+                        <h4>Estadísticas Mensuales</h4>
                         <div className="orders-body">
                             <div className="big-number">8,258</div>
-                            <div className="mini-chart">[Mini chart]</div>
+                            <div className="mini-chart">+12.5% vs mes anterior</div>
                         </div>
                     </div>
                 </section>
