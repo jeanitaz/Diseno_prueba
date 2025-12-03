@@ -409,7 +409,56 @@
     cursor: pointer;
 }
 
+/* Contenedor para los botones superiores */
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 5px;
+}
 
+/* Estilo unificado para los links de navegación */
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+/* Estilo específico para Cancelar/Volver */
+.nav-link.back {
+    color: #64748b; /* Gris azulado */
+}
+.nav-link.back:hover {
+    color: #ef4444; /* Rojo al pasar el mouse */
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Estilo específico para el botón de Buscar */
+.nav-link.search {
+    color: #3b82f6; /* Azul brillante */
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.nav-link.search:hover {
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    transform: translateY(-1px);
+}
+
+/* Ajuste para que el header del formulario no tenga márgenes extraños ahora */
+.form-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
 
 /* Animación del Modal */
 @keyframes popIn {

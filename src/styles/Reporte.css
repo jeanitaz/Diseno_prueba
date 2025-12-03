@@ -1,6 +1,6 @@
 .reports-container {
     min-height: 100vh;
-    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    background: radial-gradient(ellipse at bottom, #ffffff 0%, #ffffff 100%);
     color: #e2e8f0;
     padding: 2rem;
     position: relative;
@@ -18,7 +18,7 @@
 
 .reports-header h1 {
     font-size: 1.8rem;
-    background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+    background: linear-gradient(to right, #000000 0%, #000000 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -30,7 +30,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #94a3b8;
+    color: #000000;
     text-decoration: none;
     transition: color 0.3s;
 }
@@ -75,7 +75,7 @@
 .card {
     background: rgba(30, 41, 59, 0.4);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 16px;
     padding: 1.5rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -83,11 +83,11 @@
 }
 
 .card:hover {
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(0, 0, 0, 0.2);
 }
 
 .card h3 {
-    color: #94a3b8;
+    color: #000000;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 1px;

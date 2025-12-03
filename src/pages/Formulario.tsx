@@ -18,13 +18,13 @@ const TIPOS_REQUERIMIENTO = [
 
 // ... (MANTENER LOS ICONOS IGUALES) ...
 const UploadIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
 );
 const BackIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
 );
 const CheckIcon = () => (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
 );
 
 
@@ -32,9 +32,16 @@ const CheckIcon = () => (
 const ServiceRequestForm = () => {
     // Estado del formulario
     const [formData, setFormData] = useState({
-        fullName: '', area: '', position: '', email: '', 
+        fullName: '', area: '', position: '', email: '',
         phone: '', reqType: '', otherDetail: '', description: '', observations: ''
     });
+
+    const SearchIcon = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        );
 
     const [file, setFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
@@ -58,37 +65,74 @@ const ServiceRequestForm = () => {
         return `SSTI-${year}-${randomNum}`;
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    // ... dentro de ServiceRequestForm
+
+const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Validación rápida (opcional)
+    // Validación rápida
     if (!formData.email.includes('@inamhi.gob.ec')) {
-        alert('Correo inválido');
+        alert('Correo inválido. Debe ser @inamhi.gob.ec');
         setLoading(false);
         return;
     }
 
     // Simulación de proceso
     setTimeout(() => {
-        const newTicket = generateTicketID();
-        setTicketId(newTicket); // Guardamos el ID
-        setLoading(false);      // Quitamos el spinner
-        setShowModal(true);     // <--- ¡AQUÍ SE ABRE EL MODAL!
+        const newTicketId = generateTicketID();
+        const currentDate = new Date().toISOString().split('T')[0]; // Obtiene fecha YYYY-MM-DD
+
+        // 1. CREAMOS EL OBJETO TICKET (Con la misma estructura que usa la búsqueda)
+        const newTicketData = {
+            id: newTicketId,
+            name: formData.fullName,
+            area: formData.area,
+            type: formData.reqType,
+            status: "Pendiente", // Estado inicial por defecto
+            date: currentDate,
+            description: formData.description
+        };
+
+        // 2. GUARDAMOS EN LOCALSTORAGE (Simulando base de datos)
+        // Primero leemos si ya hay tickets guardados
+        const storedTickets = JSON.parse(localStorage.getItem('ticketsInamhi') || '[]');
+        // Agregamos el nuevo
+        storedTickets.push(newTicketData);
+        // Guardamos de nuevo el array actualizado
+        localStorage.setItem('ticketsInamhi', JSON.stringify(storedTickets));
+
+        // 3. ACTUALIZAMOS EL ESTADO VISUAL
+        setTicketId(newTicketId);
+        setLoading(false);
+        setShowModal(true);
     }, 1500);
 };
 
-    
+
 
     // --- RENDER ---
     return (
+
+
         <div className="form-container">
+
             <div className="stars"></div>
-            
+
             <div className="form-wrapper glass-panel animate-slide-up">
+
                 {/* Header del Formulario */}
                 <div className="form-header">
-                    <Link to="/" className="back-link"><BackIcon /> Cancelar</Link>
+                    <div className="header-actions">
+                        <Link to="/" className="nav-link back">
+                            <BackIcon /> Cancelar
+                        </Link>
+
+                        {/* NUEVO BOTÓN DE BÚSQUEDA (Asumiendo que lleva a una ruta /buscar) */}
+                        <Link to="/registro" className="nav-link search">
+                            <SearchIcon /> Consultar Ticket
+                        </Link>
+                    </div>
                     <img src={logoInamhi} alt="Logo" className="form-logo" />
                     <h2>Nueva Solicitud de Soporte</h2>
                     <p>Complete los campos para registrar su incidencia</p>
@@ -97,7 +141,7 @@ const ServiceRequestForm = () => {
                 <form onSubmit={handleSubmit}>
                     {/* ... (TODO EL CONTENIDO DEL FORMULARIO SE MANTIENE EXACTAMENTE IGUAL) ... */}
                     {/* ... (Solo estoy omitiendo el código repetitivo de inputs para ahorrar espacio, pégalos aquí) ... */}
-                    
+
                     {/* SECCIÓN 1: DATOS DEL USUARIO */}
                     <div className="form-section">
                         <h3><span className="step-number">1</span> Información del Solicitante</h3>
@@ -112,7 +156,7 @@ const ServiceRequestForm = () => {
                             </div>
                         </div>
                         <div className="grid-2">
-                             <div className="input-group">
+                            <div className="input-group">
                                 <label>Dirección / Área *</label>
                                 <select name="area" required value={formData.area} onChange={handleChange}>
                                     <option value="">Seleccione un área...</option>
@@ -124,7 +168,7 @@ const ServiceRequestForm = () => {
                                 <input type="email" name="email" required value={formData.email} onChange={handleChange} />
                             </div>
                         </div>
-                         <div className="input-group">
+                        <div className="input-group">
                             <label>Teléfono (Opcional)</label>
                             <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
                         </div>
@@ -143,7 +187,7 @@ const ServiceRequestForm = () => {
                             </select>
                         </div>
                         {formData.reqType === 'Otros' && (
-                             <div className="input-group animate-fade-in">
+                            <div className="input-group animate-fade-in">
                                 <label>Especifique *</label>
                                 <input type="text" name="otherDetail" required value={formData.otherDetail} onChange={handleChange} />
                             </div>
@@ -155,7 +199,7 @@ const ServiceRequestForm = () => {
                         <div className="input-group">
                             <label>Adjuntar Evidencia</label>
                             <div className="file-drop-zone" onClick={() => fileInputRef.current?.click()}>
-                                <input type="file" hidden ref={fileInputRef} onChange={handleFileChange} accept="image/*,.pdf"/>
+                                <input type="file" hidden ref={fileInputRef} onChange={handleFileChange} accept="image/*,.pdf" />
                                 <div className="file-content">
                                     <UploadIcon />
                                     <span>{file ? file.name : "Click para subir imagen o PDF"}</span>
@@ -177,47 +221,47 @@ const ServiceRequestForm = () => {
             </div>
 
             {/* --- ESTE ES EL MODAL --- */}
-{showModal && (
-    <div className="modal-overlay animate-fade-in">
-        <div className="modal-content animate-pop-in">
-            <div className="modal-header">
-                <CheckIcon />
-                <h2>¡Solicitud Enviada!</h2>
-            </div>
-            
-            <div className="ticket-display">
-                <span className="ticket-label">TICKET GENERADO</span>
-                <span className="ticket-number">{ticketId}</span>
-            </div>
+            {showModal && (
+                <div className="modal-overlay animate-fade-in">
+                    <div className="modal-content animate-pop-in">
+                        <div className="modal-header">
+                            <CheckIcon />
+                            <h2>¡Solicitud Enviada!</h2>
+                        </div>
 
-            <div className="modal-summary">
-                <p><strong>Solicitante:</strong> {formData.fullName}</p>
-                <p><strong>Área:</strong> {formData.area}</p>
-                <p><strong>Problema:</strong> {formData.reqType}</p>
-            </div>
+                        <div className="ticket-display">
+                            <span className="ticket-label">TICKET GENERADO</span>
+                            <span className="ticket-number">{ticketId}</span>
+                        </div>
 
-            <p className="modal-note">
-                Hemos enviado los detalles a su correo: {formData.email}
-            </p>
+                        <div className="modal-summary">
+                            <p><strong>Solicitante:</strong> {formData.fullName}</p>
+                            <p><strong>Área:</strong> {formData.area}</p>
+                            <p><strong>Problema:</strong> {formData.reqType}</p>
+                        </div>
 
-            {/* Botón para cerrar el modal y limpiar */}
-            <button 
-                className="btn-glow" 
-                onClick={() => {
-                    setShowModal(false); // Cierra el modal
-                    setTicketId(null);
-                    setFormData({
-                        fullName: '', area: '', position: '', email: '', 
-                        phone: '', reqType: '', otherDetail: '', description: '', observations: ''
-                    });
-                    setFile(null);
-                }}
-            >
-                Entendido, gracias
-            </button>
-        </div>
-    </div>
-)}
+                        <p className="modal-note">
+                            Hemos enviado los detalles a su correo: {formData.email}
+                        </p>
+
+                        {/* Botón para cerrar el modal y limpiar */}
+                        <button
+                            className="btn-glow"
+                            onClick={() => {
+                                setShowModal(false); // Cierra el modal
+                                setTicketId(null);
+                                setFormData({
+                                    fullName: '', area: '', position: '', email: '',
+                                    phone: '', reqType: '', otherDetail: '', description: '', observations: ''
+                                });
+                                setFile(null);
+                            }}
+                        >
+                            Entendido, gracias
+                        </button>
+                    </div>
+                </div>
+            )}
 
         </div>
     );

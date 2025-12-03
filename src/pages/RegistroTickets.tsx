@@ -53,6 +53,8 @@ const BackIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
 );
 
+// ... imports y MOCK_DB igual que antes ...
+
 const TicketTracking = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(false);
@@ -67,10 +69,17 @@ const TicketTracking = () => {
         setTicket(null);
         setError('');
 
-        // Simulamos retardo de red
         setTimeout(() => {
-            const found = MOCK_DB.find(t =>
-                t.id.toLowerCase() === searchTerm.toLowerCase() ||
+            // 1. RECUPERAR TICKETS GUARDADOS EN LOCALSTORAGE
+            // (Los que creaste en el formulario)
+            const storedTickets = JSON.parse(localStorage.getItem('ticketsInamhi') || '[]');
+
+            // 2. UNIR MOCK_DB + TICKETS NUEVOS
+            const allTickets = [...MOCK_DB, ...storedTickets];
+
+            // 3. BUSCAR EN LA LISTA COMBINADA
+            const found = allTickets.find(t => 
+                t.id.toLowerCase() === searchTerm.toLowerCase() || 
                 t.name.toLowerCase().includes(searchTerm.toLowerCase())
             );
 
@@ -82,6 +91,7 @@ const TicketTracking = () => {
             setLoading(false);
         }, 1000);
     };
+
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -97,7 +107,7 @@ const TicketTracking = () => {
 
             <div className="form-wrapper glass-panel animate-slide-up" style={{ maxWidth: '600px' }}>
                 <div className="form-header">
-                    <Link to="/" className="back-link"><BackIcon /> Volver al Inicio</Link>
+                    <Link to="/formulario" className="back-link"><BackIcon /> Volver al Inicio</Link>
                     <img src={logoInamhi} alt="Logo" className="form-logo" />
                     <h2>Consultar Estado</h2>
                     <p>Ingrese su número de ticket o nombre completo</p>
