@@ -1,49 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/RegistroTickects.css'; // Importamos los estilos específicos
+import '../styles/RegistroTickects.css';
 import logoInamhi from '../assets/lgo.png';
-
-// --- TIPO DE TICKET (Solo para TypeScript) ---
-interface Ticket {
-    id: string;
-    name: string;
-    area: string;
-    type: string;
-    status: string;
-    date: string;
-    description: string;
-}
-
-// --- BASE DE DATOS SIMULADA (MOCK DATA) ---
-const MOCK_DB: Ticket[] = [
-    {
-        id: "SSTI-2024-8842",
-        name: "Carlos Estévez",
-        area: "Dirección de Meteorología",
-        type: "Problemas de red / internet",
-        status: "Pendiente",
-        date: "2024-10-25",
-        description: "No tengo acceso a la carpeta compartida de lluvias."
-    },
-    {
-        id: "SSTI-2024-1002",
-        name: "Maria Fernanda",
-        area: "Jurídico",
-        type: "Problemas de hardware",
-        status: "En Proceso",
-        date: "2024-10-24",
-        description: "La impresora hace un ruido extraño al imprimir a doble cara."
-    },
-    {
-        id: "SSTI-2024-0011",
-        name: "Juan Perez",
-        area: "Tecnología",
-        type: "Instalación de Software",
-        status: "Resuelto",
-        date: "2024-10-20",
-        description: "Instalación de Adobe Acrobat Pro completada."
-    }
-];
 
 // --- ICONOS ---
 const SearchIcon = () => (
@@ -53,7 +11,16 @@ const BackIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
 );
 
-// ... imports y MOCK_DB igual que antes ...
+interface Ticket {
+    id_visual: string;
+    estado: string;
+    nombre_completo: string;
+    area: string;
+    date: string;
+    fecha_creacion: string;
+    tipo: string;
+    descripcion_problema: string;
+}
 
 const TicketTracking = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -61,7 +28,7 @@ const TicketTracking = () => {
     const [ticket, setTicket] = useState<Ticket | null>(null);
     const [error, setError] = useState('');
 
-    const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!searchTerm.trim()) return;
 
@@ -69,36 +36,35 @@ const TicketTracking = () => {
         setTicket(null);
         setError('');
 
-        setTimeout(() => {
-            // 1. RECUPERAR TICKETS GUARDADOS EN LOCALSTORAGE
-            // (Los que creaste en el formulario)
-            const storedTickets = JSON.parse(localStorage.getItem('ticketsInamhi') || '[]');
+        try {
+            // CONEXIÓN CON EL BACKEND
+            const response = await fetch(`http://localhost:3001/api/tickets/search?term=${encodeURIComponent(searchTerm)}`);
+            const data = await response.json();
 
-            // 2. UNIR MOCK_DB + TICKETS NUEVOS
-            const allTickets = [...MOCK_DB, ...storedTickets];
-
-            // 3. BUSCAR EN LA LISTA COMBINADA
-            const found = allTickets.find(t => 
-                t.id.toLowerCase() === searchTerm.toLowerCase() || 
-                t.name.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-
-            if (found) {
-                setTicket(found);
+            if (response.ok) {
+                // Formateamos la fecha para que se vea bonita
+                const formattedTicket = {
+                    ...data,
+                    date: new Date(data.fecha_creacion).toLocaleDateString('es-EC')
+                };
+                setTicket(formattedTicket);
             } else {
-                setError('No se encontró ningún ticket con esa información.');
+                setError(data.message || 'No se encontró el ticket.');
             }
+        } catch (err) {
+            console.error("Error buscando ticket:", err);
+            setError('Error de conexión con el servidor.');
+        } finally {
             setLoading(false);
-        }, 1000);
+        }
     };
 
-
     const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'Resuelto': return 'status-success';
-            case 'En Proceso': return 'status-warning';
-            default: return 'status-pending';
-        }
+        // Aseguramos que status exista antes de comparar
+        const s = status ? status.toLowerCase() : '';
+        if (s === 'resuelto') return 'status-success';
+        if (s === 'en proceso') return 'status-warning';
+        return 'status-pending';
     };
 
     return (
@@ -107,10 +73,10 @@ const TicketTracking = () => {
 
             <div className="form-wrapper glass-panel animate-slide-up" style={{ maxWidth: '600px' }}>
                 <div className="form-header">
-                    <Link to="/formulario" className="back-link"><BackIcon /> Volver al Inicio</Link>
+                    <Link to="/" className="back-link"><BackIcon /> Volver al Inicio</Link>
                     <img src={logoInamhi} alt="Logo" className="form-logo" />
                     <h2>Consultar Estado</h2>
-                    <p>Ingrese su número de ticket o nombre completo</p>
+                    <p>Ingrese su número de ticket (Ej: SSTI-2025-0001) o nombre completo</p>
                 </div>
 
                 {/* BARRA DE BÚSQUEDA */}
@@ -119,7 +85,7 @@ const TicketTracking = () => {
                         <SearchIcon />
                         <input
                             type="text"
-                            placeholder="Ej: SSTI-2024-8842 o Carlos..."
+                            placeholder="Ej: SSTI-2025-0001 o Juan Pérez..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -133,7 +99,7 @@ const TicketTracking = () => {
 
                 {/* RESULTADOS */}
                 <div className="result-area">
-                    {loading && <p className="loading-text">Buscando en la base de datos...</p>}
+                    {loading && <p className="loading-text">Consultando base de datos...</p>}
 
                     {error && (
                         <div className="error-message animate-fade-in">
@@ -144,16 +110,16 @@ const TicketTracking = () => {
                     {ticket && (
                         <div className="ticket-card animate-pop-in">
                             <div className="ticket-card-header">
-                                <span className="ticket-id-badge">{ticket.id}</span>
-                                <span className={`status-badge ${getStatusColor(ticket.status)}`}>
-                                    {ticket.status}
+                                <span className="ticket-id-badge">{ticket.id_visual}</span>
+                                <span className={`status-badge ${getStatusColor(ticket.estado)}`}>
+                                    {ticket.estado}
                                 </span>
                             </div>
 
                             <div className="ticket-details">
                                 <div className="detail-row">
                                     <span className="label">Solicitante:</span>
-                                    <span className="value">{ticket.name}</span>
+                                    <span className="value">{ticket.nombre_completo}</span>
                                 </div>
                                 <div className="detail-row">
                                     <span className="label">Área:</span>
@@ -165,13 +131,13 @@ const TicketTracking = () => {
                                 </div>
                                 <div className="detail-row">
                                     <span className="label">Tipo:</span>
-                                    <span className="value">{ticket.type}</span>
+                                    <span className="value">{ticket.tipo}</span>
                                 </div>
                             </div>
 
                             <div className="ticket-description">
                                 <span className="label">Descripción:</span>
-                                <p>{ticket.description}</p>
+                                <p>{ticket.descripcion_problema}</p>
                             </div>
                         </div>
                     )}

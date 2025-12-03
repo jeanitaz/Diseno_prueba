@@ -1,6 +1,6 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, type ChangeEvent, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/Formulario.css'; // Asegúrate de que este archivo incluya los nuevos estilos abajo
+import '../styles/Formulario.css';
 import logoInamhi from '../assets/lgo.png';
 
 // ... (MANTENER LOS ARRAYS DE AREAS Y TIPOS IGUAL QUE ANTES) ...
@@ -26,7 +26,9 @@ const BackIcon = () => (
 const CheckIcon = () => (
     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
 );
-
+const SearchIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+);
 
 
 const ServiceRequestForm = () => {
@@ -36,87 +38,65 @@ const ServiceRequestForm = () => {
         phone: '', reqType: '', otherDetail: '', description: '', observations: ''
     });
 
-    const SearchIcon = () => (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-        );
-
     const [file, setFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
-    const [ticketId, setTicketId] = useState<string | null>(null);
+    const [ticketId, setTicketId] = useState(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [showModal, setShowModal] = useState(false); // Estado para controlar el modal
+    const [showModal, setShowModal] = useState(false);
 
-    // ... (MANTENER HANDLECHANGE Y HANDLEFILECHANGE IGUAL) ...
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) setFile(e.target.files[0]);
     };
 
-    const generateTicketID = () => {
-        const year = new Date().getFullYear();
-        const randomNum = Math.floor(Math.random() * 10000).toString().padStart(6, '0');
-        return `SSTI-${year}-${randomNum}`;
+    // --- FUNCIÓN ACTUALIZADA PARA CONECTAR CON BD ---
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+
+        // Validación rápida
+        if (!formData.email.includes('@inamhi.gob.ec')) {
+            alert('Correo inválido. Debe ser @inamhi.gob.ec');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            // 1. Enviamos los datos al Backend (Node.js)
+            const response = await fetch('http://localhost:3001/api/tickets', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData), // Enviamos el estado del formulario tal cual
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // 2. Si el servidor respondió OK (200)
+                setTicketId(data.ticketId); // El ID que nos devolvió la base de datos
+                setShowModal(true);
+            } else {
+                // 3. Si hubo error en el servidor
+                alert('Error al crear ticket: ' + (data.message || 'Error desconocido'));
+            }
+
+        } catch (error) {
+            console.error("Error de conexión:", error);
+            alert('No se pudo conectar con el servidor. Asegúrate de que el backend esté corriendo.');
+        } finally {
+            setLoading(false);
+        }
     };
-
-    // ... dentro de ServiceRequestForm
-
-const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    // Validación rápida
-    if (!formData.email.includes('@inamhi.gob.ec')) {
-        alert('Correo inválido. Debe ser @inamhi.gob.ec');
-        setLoading(false);
-        return;
-    }
-
-    // Simulación de proceso
-    setTimeout(() => {
-        const newTicketId = generateTicketID();
-        const currentDate = new Date().toISOString().split('T')[0]; // Obtiene fecha YYYY-MM-DD
-
-        // 1. CREAMOS EL OBJETO TICKET (Con la misma estructura que usa la búsqueda)
-        const newTicketData = {
-            id: newTicketId,
-            name: formData.fullName,
-            area: formData.area,
-            type: formData.reqType,
-            status: "Pendiente", // Estado inicial por defecto
-            date: currentDate,
-            description: formData.description
-        };
-
-        // 2. GUARDAMOS EN LOCALSTORAGE (Simulando base de datos)
-        // Primero leemos si ya hay tickets guardados
-        const storedTickets = JSON.parse(localStorage.getItem('ticketsInamhi') || '[]');
-        // Agregamos el nuevo
-        storedTickets.push(newTicketData);
-        // Guardamos de nuevo el array actualizado
-        localStorage.setItem('ticketsInamhi', JSON.stringify(storedTickets));
-
-        // 3. ACTUALIZAMOS EL ESTADO VISUAL
-        setTicketId(newTicketId);
-        setLoading(false);
-        setShowModal(true);
-    }, 1500);
-};
-
-
 
     // --- RENDER ---
     return (
-
-
         <div className="form-container">
-
             <div className="stars"></div>
 
             <div className="form-wrapper glass-panel animate-slide-up">
@@ -127,8 +107,6 @@ const handleSubmit = (e: React.FormEvent) => {
                         <Link to="/" className="nav-link back">
                             <BackIcon /> Cancelar
                         </Link>
-
-                        {/* NUEVO BOTÓN DE BÚSQUEDA (Asumiendo que lleva a una ruta /buscar) */}
                         <Link to="/registro" className="nav-link search">
                             <SearchIcon /> Consultar Ticket
                         </Link>
@@ -139,8 +117,6 @@ const handleSubmit = (e: React.FormEvent) => {
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    {/* ... (TODO EL CONTENIDO DEL FORMULARIO SE MANTIENE EXACTAMENTE IGUAL) ... */}
-                    {/* ... (Solo estoy omitiendo el código repetitivo de inputs para ahorrar espacio, pégalos aquí) ... */}
 
                     {/* SECCIÓN 1: DATOS DEL USUARIO */}
                     <div className="form-section">
@@ -241,14 +217,14 @@ const handleSubmit = (e: React.FormEvent) => {
                         </div>
 
                         <p className="modal-note">
-                            Hemos enviado los detalles a su correo: {formData.email}
+                            Nuestro Equipo de Soporte se pondrá en contacto con usted en breve.
                         </p>
 
                         {/* Botón para cerrar el modal y limpiar */}
                         <button
                             className="btn-glow"
                             onClick={() => {
-                                setShowModal(false); // Cierra el modal
+                                setShowModal(false);
                                 setTicketId(null);
                                 setFormData({
                                     fullName: '', area: '', position: '', email: '',
@@ -262,7 +238,6 @@ const handleSubmit = (e: React.FormEvent) => {
                     </div>
                 </div>
             )}
-
         </div>
     );
 };

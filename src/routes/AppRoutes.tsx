@@ -15,7 +15,7 @@ const AppRoutes = () => {
             <Route path="/listado" element={<Historial_tickets />} />
             <Route path="/registro" element={<TicketTracking />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/super-admin" element={<SuperAdminDashboard />} />
+            <Route path="/tecnico" element={<SuperAdminDashboard />} />
             <Route path="/login" element={<LoginAdmin />} />
             <Route path="/reportes" element={<Reportes />} />
 

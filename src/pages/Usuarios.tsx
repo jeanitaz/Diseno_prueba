@@ -1,92 +1,198 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../styles/Formulario.css';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+// import Reloj from "../components/reloj"; // Descomenta si tienes el componente
 import logoInamhi from '../assets/lgo.png';
-import Reloj from '../components/reloj';
+import "../styles/Tecnico.css"; // Usaremos el CSS que me pasaste + extras
 
-const SuperAdminDashboard = () => {
+// --- MOCK DATA (Datos de prueba) ---
+const INITIAL_TICKETS = [
+    { id: "TIC-001", issue: "Falla Impresora Laser", area: "RRHH", prio: "Alta", estado: "Pendiente", asignado: null, fecha: "2025-12-02", desc: "No jala papel y hace ruido." },
+    { id: "TIC-002", issue: "Instalar Office 365", area: "Financiero", prio: "Media", estado: "En proceso", asignado: "YO", fecha: "2025-12-03", desc: "Requiere licencia para nuevo ingreso." },
+    { id: "TIC-003", issue: "Sin acceso a Internet", area: "Gerencia", prio: "Alta", estado: "En proceso", asignado: "YO", fecha: "2025-12-03", desc: "Router parpadea en rojo." },
+    { id: "TIC-004", issue: "Cambio de Mouse", area: "Bodega", prio: "Baja", estado: "Resuelto", asignado: "YO", fecha: "2025-11-20", desc: "El click derecho no funciona." },
+    { id: "TIC-005", issue: "PC Lenta", area: "Recepción", prio: "Media", estado: "Pendiente", asignado: null, fecha: "2025-12-04", desc: "Se congela al abrir Excel." },
+];
+
+// --- COMPONENTE KPI (Reutilizado) ---
+interface StatusCardProps {
+    title: string;
+    icon: string;
+    count: number;
+    colorClass: string;
+}
+
+const StatusCard = ({ title, icon, count, colorClass }: StatusCardProps) => (
+    <div className={`kpi-card ${colorClass}`}>
+        <div className="kpi-icon-wrapper">{icon}</div>
+        <div className="kpi-info">
+            <span className="kpi-count">{count}</span>
+            <span className="kpi-title">{title}</span>
+        </div>
+    </div>
+);
+
+export default function TechnicianDashboard() {
     const navigate = useNavigate();
-    const [userName, setUserName] = useState('');
+    const [seccion, setSeccion] = useState("mis-pendientes"); // 'bolsa', 'mis-pendientes', 'historial'
+    const [tickets, setTickets] = useState(INITIAL_TICKETS);
 
-    useEffect(() => {
-        // Validación básica de seguridad
-        const role = localStorage.getItem('role');
-        const user = localStorage.getItem('userName');
-        
-        if (role !== 'admin') {
-            navigate('/login'); // Si no es admin, fuera
-        } else {
-            setUserName(user || 'Diego');
-        }
-    }, [navigate]);
+    // --- LÓGICA DE FILTRADO ---
+    const ticketsFiltrados = tickets.filter(t => {
+        if (seccion === "bolsa") return t.asignado === null;
+        if (seccion === "mis-pendientes") return t.asignado === "YO" && t.estado !== "Resuelto";
+        if (seccion === "historial") return t.asignado === "YO" && t.estado === "Resuelto";
+        return [];
+    });
 
-    const handleLogout = () => {
-        localStorage.clear();
-        navigate('/');
+    // --- ACCIONES ---
+    const tomarTicket = (id: string) => {
+        setTickets(tickets.map(t => t.id === id ? { ...t, asignado: "YO", estado: "En proceso" } : t));
+        setSeccion("mis-pendientes"); // Mover al técnico a su lista automáticamente
     };
 
+    const finalizarTicket = (id: string) => {
+        if (window.confirm("¿Marcar ticket como resuelto?")) {
+            setTickets(tickets.map(t => t.id === id ? { ...t, estado: "Resuelto" } : t));
+        }
+    };
+
+    const handleLogout = () => navigate('/login');
+
     return (
-        <div className="form-container" style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)' }}>
-            <div className="stars"></div>
-            
-            {/* Header Superior */}
-            <nav style={{ 
-                position: 'absolute', top: 0, left: 0, width: '100%', 
-                padding: '1.5rem 2rem', display: 'flex', justifyContent: 'space-between', 
-                alignItems: 'center', zIndex: 10, color: 'white' 
-            }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <img src={logoInamhi} alt="Logo" style={{ height: '40px' }} />
-                    <h2 style={{ margin: 0, fontSize: '1.2rem' }}>Panel Directivo</h2>
-                </div>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                    <span>Hola, {userName}</span>
-                    <button 
-                        onClick={handleLogout}
-                        className="btn-glow" 
-                        style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', background: 'rgba(255,0,0,0.2)' }}
-                    >
-                        Cerrar Sesión
-                    </button>
-                </div>
-            </nav>
-            <div className="header-actions">
-                <Reloj />
-            </div>
+        <div className="admin-layout">
+            {/* FONDO ANIMADO */}
+            <div className="admin-bg-stars"></div>
+            <div className="admin-bg-glow"></div>
 
-            <div className="form-wrapper glass-panel animate-slide-up" style={{ maxWidth: '800px', marginTop: '80px' }}>
-                <div className="form-header">
-                    <h2>Dashboard General</h2>
-                    <p>Vista de Supervisión y Métricas</p>
+            {/* --- SIDEBAR (Adaptado para Técnico) --- */}
+            <aside className="glass-sidebar">
+                <div className="sidebar-header">
+                    <img src={logoInamhi} alt="Logo INAMHI" className="sidebar-logo" />
                 </div>
 
-                <div className="grid-2" style={{ gap: '1rem', marginTop: '2rem' }}>
-                    {/* Tarjeta de Métricas 1 */}
-                    <div style={{ 
-                        background: 'rgba(255,255,255,0.1)', padding: '1.5rem', 
-                        borderRadius: '12px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.2)' 
-                    }}>
-                        <h3 style={{ fontSize: '3rem', margin: '0 0 0.5rem 0', color: '#4ade80' }}>12</h3>
-                        <span style={{ color: '#94a3b8' }}>Tickets Pendientes</span>
+                <nav className="sidebar-nav">
+                    <div className="nav-group">
+                        <span className="nav-label">Mi Espacio</span>
+
+                        <button
+                            className={`nav-item ${seccion === 'mis-pendientes' ? 'active' : ''}`}
+                            onClick={() => setSeccion('mis-pendientes')}
+                        >
+                            <span className="icon">🚀</span> En Curso
+                            <span className="badge-pill">{tickets.filter(t => t.asignado === "YO" && t.estado !== "Resuelto").length}</span>
+                        </button>
+
+                        <button
+                            className={`nav-item ${seccion === 'bolsa' ? 'active' : ''}`}
+                            onClick={() => setSeccion('bolsa')}
+                        >
+                            <span className="icon">📥</span> Bolsa de Tickets
+                            <span className="badge-pill warning">{tickets.filter(t => t.asignado === null).length}</span>
+                        </button>
+
+                        <button
+                            className={`nav-item ${seccion === 'historial' ? 'active' : ''}`}
+                            onClick={() => setSeccion('historial')}
+                        >
+                            <span className="icon">✅</span> Historial
+                        </button>
                     </div>
 
-                    {/* Tarjeta de Métricas 2 */}
-                    <div style={{ 
-                        background: 'rgba(255,255,255,0.1)', padding: '1.5rem', 
-                        borderRadius: '12px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.2)' 
-                    }}>
-                        <h3 style={{ fontSize: '3rem', margin: '0 0 0.5rem 0', color: '#60a5fa' }}>45</h3>
-                        <span style={{ color: '#94a3b8' }}>Tickets Resueltos (Mes)</span>
+                    <div className="nav-group">
+                        <span className="nav-label">Sistema</span>
+                        <button className="nav-item logout" onClick={handleLogout}>
+                            <span className="icon">🚪</span> Salir
+                        </button>
+                    </div>
+                </nav>
+
+                <div className="sidebar-footer">
+                    <div className="user-mini-profile">
+                        <div className="user-avatar">TEC</div>
+                        <div className="user-info">
+                            <span className="name">Técnico 1</span>
+                            <span className="role">Soporte N1</span>
+                        </div>
                     </div>
                 </div>
+            </aside>
 
-                <div style={{ marginTop: '2rem', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
-                    <h3 style={{ color: 'white', marginBottom: '1rem' }}>Gestión de Personal</h3>
-                    <p style={{ color: '#cbd5e1' }}>Aquí iría la lista de técnicos y asignaciones...</p>
+            {/* --- CONTENIDO PRINCIPAL --- */}
+            <main className="admin-content">
+
+                {/* Header */}
+                <header className="content-header">
+                    <div className="header-titles">
+                        <h1>Panel Técnico</h1>
+                        <p>
+                            {seccion === 'bolsa' && "Tickets disponibles para tomar."}
+                            {seccion === 'mis-pendientes' && "Tus asignaciones activas."}
+                            {seccion === 'historial' && "Tickets que has resuelto."}
+                        </p>
+                    </div>
+                    {/* <Reloj /> */}
+                    <div className="date-badge">{new Date().toLocaleDateString()}</div>
+                </header>
+
+                {/* KPIs Rápidos (Siempre visibles) */}
+                <div className="kpi-mini-grid">
+                    <StatusCard title="Pendientes" count={tickets.filter(t => t.asignado === "YO" && t.estado !== "Resuelto").length} icon="🔥" colorClass="warning" />
+                    <StatusCard title="Resueltos Hoy" count={2} icon="✨" colorClass="success" />
+                    <StatusCard title="Bolsa General" count={tickets.filter(t => t.asignado === null).length} icon="📢" colorClass="info" />
                 </div>
-            </div>
+
+                {/* --- GRID DE TICKETS (Glass Cards) --- */}
+                <div className="tickets-grid-container">
+                    {ticketsFiltrados.length > 0 ? (
+                        ticketsFiltrados.map((t) => (
+                            <div key={t.id} className={`glass-ticket-card priority-${t.prio.toLowerCase()}`}>
+                                <div className="ticket-header">
+                                    <span className="ticket-id">#{t.id}</span>
+                                    <span className={`status-badge ${t.estado === 'Resuelto' ? 'done' : 'pending'}`}>{t.estado}</span>
+                                </div>
+
+                                <div className="ticket-body">
+                                    <h3>{t.issue}</h3>
+                                    <p className="desc">"{t.desc}"</p>
+
+                                    <div className="ticket-meta">
+                                        <div className="meta-item">
+                                            <span className="label">Área:</span> {t.area}
+                                        </div>
+                                        <div className="meta-item">
+                                            <span className="label">Prioridad:</span>
+                                            <span className={`prio-text ${t.prio.toLowerCase()}`}>{t.prio}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="ticket-footer">
+                                    {seccion === 'bolsa' && (
+                                        <button className="btn-neon full-width" onClick={() => tomarTicket(t.id)}>
+                                            ✋ Tomar Ticket
+                                        </button>
+                                    )}
+                                    {seccion === 'mis-pendientes' && (
+                                        <>
+                                            <button className="btn-glass">📝 Bitácora</button>
+                                            <button className="btn-neon-green" onClick={() => finalizarTicket(t.id)}>✅ Finalizar</button>
+                                        </>
+                                    )}
+                                    {seccion === 'historial' && (
+                                        <button className="btn-glass full-width">👁️ Ver Detalles</button>
+                                    )}
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="empty-state-glass">
+                            <span className="empty-icon">📂</span>
+                            <p>No hay tickets en esta sección.</p>
+                        </div>
+                    )}
+                </div>
+
+            </main>
         </div>
     );
-};
-
-export default SuperAdminDashboard;
+}

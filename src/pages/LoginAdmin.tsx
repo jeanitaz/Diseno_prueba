@@ -19,8 +19,8 @@ type Role = 'admin' | 'tecnico';
 // Datos quemados para prueba
 const MOCK_DB = {
     admin: { email: 'admin@inamhi.gob.ec', pass: 'admin123', name: 'Diego González' },
-    tecnico: { email: 'tec@inamhi.gob.ec', pass: 'tec123', name: 'Juan Pérez' }
-};
+    tecnico: { email: 'tec@inamhi.gob.ec', pass: 'tec123', name: 'Juan Pérez' },
+}
 
 const LoginAdmin = () => {
     const [role, setRole] = useState<Role>('admin');
@@ -47,9 +47,9 @@ const LoginAdmin = () => {
 
                 // --- AQUÍ ESTÁ EL CAMBIO DE LÓGICA ---
                 if (role === 'admin') {
-                    navigate('/super-admin'); // Vista del Jefe / Super Admin
+                    navigate('/admin'); 
                 } else {
-                    navigate('/admin'); // Vista del Técnico (Gestión de tickets)
+                    navigate('/tecnico'); 
                 }
 
             } else {
@@ -83,18 +83,18 @@ const LoginAdmin = () => {
                 {/* Selector de Roles */}
                 <div className="role-cards">
                     <div
-                        className={`role-card ${role === 'admin' ? 'active' : ''}`}
-                        onClick={() => { setRole('admin'); setError(''); }}
-                    >
-                        <div className="icon-box"><AdminIcon /></div>
-                        <span>Super Admin</span>
-                    </div>
-                    <div
                         className={`role-card ${role === 'tecnico' ? 'active' : ''}`}
                         onClick={() => { setRole('tecnico'); setError(''); }}
                     >
                         <div className="icon-box"><TechIcon /></div>
                         <span>Técnico</span>
+                    </div>
+                    <div
+                        className={`role-card ${role === 'admin' ? 'active' : ''}`}
+                        onClick={() => { setRole('admin'); setError(''); }}
+                    >
+                        <div className="icon-box"><AdminIcon /></div>
+                        <span>Admin</span>
                     </div>
                 </div>
 

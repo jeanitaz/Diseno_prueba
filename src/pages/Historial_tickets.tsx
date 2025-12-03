@@ -3,61 +3,60 @@ import { Link } from 'react-router-dom';
 import '../styles/Historial.css';
 import logoInamhi from '../assets/lgo.png';
 
-// --- INTERFACE ---
+// --- ICONOS SVG ---
+const BackIcon = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>);
+const SearchIcon = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>);
+const FilterIcon = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>);
+const DownloadIcon = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>);
+const EyeIcon = () => (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>);
+
 interface Ticket {
   id: string;
   date: string;
   name: string;
   area: string;
   type: string;
-  status: string;
   tech: string;
+  status: string;
 }
 
-// --- ICONOS SVG ---
-const BackIcon = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>);
-const SearchIcon = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>);
-const FilterIcon = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>);
-const DownloadIcon = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>);
-const EyeIcon = () => (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>);
-
 const TicketHistory = () => {
-  // Estado inicial vacío (sin MOCKs)
   const [allTickets, setAllTickets] = useState<Ticket[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('Todos');
   const [loading, setLoading] = useState(true);
 
-  // --- CARGAR DATOS SOLO DE LOCALSTORAGE ---
+  // --- CARGAR DATOS DESDE EL BACKEND (BD) ---
   useEffect(() => {
-    const storedData = localStorage.getItem('ticketsInamhi');
-    
-    if (storedData) {
+    const fetchTickets = async () => {
       try {
-        const parsedTickets: Ticket[] = JSON.parse(storedData);
-        // Normalizamos datos por si faltan campos
-        const cleanTickets = parsedTickets.map(t => ({
-          ...t,
-          tech: t.tech || 'Sin Asignar',
-          status: t.status || 'Pendiente'
-        }));
-        // Ordenamos del más reciente al más antiguo
-        setAllTickets(cleanTickets.reverse());
+        // Llamada al nuevo endpoint que creamos en server.js
+        const response = await fetch('http://localhost:3001/api/tickets');
+
+        if (response.ok) {
+          const data = await response.json();
+          setAllTickets(data);
+        } else {
+          console.error("Error obteniendo historial");
+        }
       } catch (error) {
-        console.error("Error leyendo historial:", error);
+        console.error("Error de conexión:", error);
+      } finally {
+        setLoading(false);
       }
-    }
-    setLoading(false);
+    };
+
+    fetchTickets();
   }, []);
 
-  // --- FILTRADO ---
+  // --- FILTRADO (Se mantiene igual, filtra sobre lo que bajó de la BD) ---
   const filteredTickets = allTickets.filter((ticket) => {
     const term = searchTerm.toLowerCase();
-    const matchText = 
+    const matchText =
       (ticket.name?.toLowerCase() || '').includes(term) ||
       (ticket.id?.toLowerCase() || '').includes(term) ||
       (ticket.area?.toLowerCase() || '').includes(term);
-    
+
     const matchStatus = statusFilter === 'Todos' || ticket.status === statusFilter;
 
     return matchText && matchStatus;
@@ -66,7 +65,7 @@ const TicketHistory = () => {
   // --- EXPORTAR ---
   const handleExport = () => {
     if (filteredTickets.length === 0) return;
-    
+
     const headers = ["ID", "Fecha", "Solicitante", "Área", "Problema", "Técnico", "Estado"];
     const rows = filteredTickets.map(t => [
       t.id, t.date, `"${t.name}"`, `"${t.area}"`, `"${t.type}"`, t.tech, t.status
@@ -84,9 +83,11 @@ const TicketHistory = () => {
   };
 
   const getStatusClass = (status: string) => {
-    switch (status) {
-      case 'Resuelto': return 'status-resolved';
-      case 'En Proceso': return 'status-process';
+    // Manejo seguro por si status viene null
+    const s = status ? status.toLowerCase() : '';
+    switch (s) {
+      case 'resuelto': return 'status-resolved';
+      case 'en proceso': return 'status-process';
       default: return 'status-pending';
     }
   };
@@ -98,7 +99,7 @@ const TicketHistory = () => {
       <div className="bg-glow"></div>
 
       <div className="historial-container animate-enter">
-        
+
         {/* HEADER */}
         <header className="historial-header">
           <div className="header-brand">
@@ -111,9 +112,9 @@ const TicketHistory = () => {
               <p>Base de datos de soporte técnico</p>
             </div>
           </div>
-          
-          <button 
-            className={`btn-primary ${filteredTickets.length === 0 ? 'disabled' : ''}`} 
+
+          <button
+            className={`btn-primary ${filteredTickets.length === 0 ? 'disabled' : ''}`}
             onClick={handleExport}
             disabled={filteredTickets.length === 0}
           >
@@ -125,14 +126,14 @@ const TicketHistory = () => {
         <div className="controls-panel">
           <div className="search-group">
             <SearchIcon />
-            <input 
-              type="text" 
-              placeholder="Buscar por ID, nombre, área..." 
+            <input
+              type="text"
+              placeholder="Buscar por ID, nombre, área..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
+
           <div className="filter-group">
             <FilterIcon />
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
@@ -161,7 +162,7 @@ const TicketHistory = () => {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={8} className="state-cell">Cargando datos...</td></tr>
+                <tr><td colSpan={8} className="state-cell">Cargando datos desde el servidor...</td></tr>
               ) : filteredTickets.length > 0 ? (
                 filteredTickets.map((ticket, i) => (
                   <tr key={ticket.id || i}>
@@ -186,8 +187,8 @@ const TicketHistory = () => {
               ) : (
                 <tr>
                   <td colSpan={8} className="state-cell">
-                    {allTickets.length === 0 
-                      ? "No hay tickets registrados en el sistema." 
+                    {allTickets.length === 0
+                      ? "No hay tickets registrados en la base de datos."
                       : "No se encontraron resultados con los filtros actuales."}
                   </td>
                 </tr>
