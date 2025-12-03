@@ -12,7 +12,4 @@ export const api = {
             throw error;
         }
     },
-
-    // Example: Get Users (You can expand this later)
-    // getUsers: async () => { ... }
 };

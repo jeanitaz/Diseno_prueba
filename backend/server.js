@@ -163,6 +163,30 @@ app.get('/api/tickets', (req, res) => {
             };
         });
 
+        app.post('/api/usuarios', (req, res) => {
+    const { nombre, email, password, rol, departamento } = req.body;
+
+    // Validación básica
+    if (!nombre || !email || !password || !rol) {
+        return res.status(400).send({ message: 'Faltan campos obligatorios' });
+    }
+
+    const sql = `INSERT INTO usuarios (nombre_completo, email, password, rol, departamento) VALUES (?, ?, ?, ?, ?)`;
+    
+    const values = [nombre, email, password, rol, departamento];
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            console.error(err);
+            // Detectar error de correo duplicado (código 1062 en MySQL)
+            if (err.code === 'ER_DUP_ENTRY') {
+                return res.status(409).send({ message: 'El correo electrónico ya está registrado.' });
+            }
+            return res.status(500).send({ message: 'Error al registrar usuario', error: err });
+        }
+        res.status(200).send({ message: 'Usuario creado exitosamente', userId: result.insertId });
+    });
+});
         res.json(history);
     });
 });

@@ -73,7 +73,7 @@ const TicketTracking = () => {
 
             <div className="form-wrapper glass-panel animate-slide-up" style={{ maxWidth: '600px' }}>
                 <div className="form-header">
-                    <Link to="/" className="back-link"><BackIcon /> Volver al Inicio</Link>
+                    <Link to="/formulario" className="back-link"><BackIcon /> Volver al Inicio</Link>
                     <img src={logoInamhi} alt="Logo" className="form-logo" />
                     <h2>Consultar Estado</h2>
                     <p>Ingrese su número de ticket (Ej: SSTI-2025-0001) o nombre completo</p>

@@ -55,7 +55,7 @@ export default function Admin() {
                         <button className="nav-item" onClick={() => navigate('/listado')}>
                             <span className="icon">📝</span> Historial Tickets
                         </button>
-                        <button className="nav-item">
+                        <button className="nav-item" onClick={() => navigate('/usuarios')}>
                             <span className="icon">👥</span> Usuarios
                         </button>
                     </div>
