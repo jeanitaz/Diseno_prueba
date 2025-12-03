@@ -35,9 +35,6 @@ app.post('/api/tickets', (req, res) => {
         return res.status(400).send({ message: 'Faltan campos obligatorios' });
     }
 
-    // QUERY SQL
-    // Nota: Usamos subconsultas para obtener el ID del Área y del Tipo basándonos en el nombre
-    // Esto es necesario porque tu formulario envía texto ("Jurídico") pero la BD espera un ID (7)
     const sql = `
         INSERT INTO tickets_soporte (
             nombre_completo, 
